@@ -17,9 +17,14 @@ class agentPanelController extends Controller
 {
     public function reset(Request $req)
     {
+        $validatedData = $req->validate([
+            'oldpassword' => 'required',
+            'newpassword' => 'required',
+            'confirmpassword' => 'required|same:newpassword',
+        ]);
+
         $userdetail = Userdetail::where('email',$req->email)->get()->first();
-        if($userdetail)
-        {
+        
             $passwordHashStatus = Hash::check($req->oldpassword,$userdetail->password);
             if($passwordHashStatus)
             {
@@ -35,33 +40,33 @@ class agentPanelController extends Controller
                     session()->pull('role',null);
 
                     // return view('agentResetPass',['successMessage' => 'Password changed successfully']);
+                    
                     return redirect('login')->with('password','Password changed successfully');
                 }
                 else
                 {
-                    $error = "Password and confirm password are not same";
+                    // $error = "Password and confirm password are not same";
+                    return redirect('/agentResetPass')->with('resetError','Password and confirm password are not same');
+
                 }
             }
             else
             {
-                $error = "Please enter the same password as sent on your registered mail";
-            }
-        }
-        else
-        {
-            $error = "Please enter your registered email";
-        }
+                // $error = "Please enter the same password as sent on your registered mail";
+                return redirect('/agentResetPass')->with('resetError','Please enter the same password as sent on your registered mail');
 
-        return view('agentResetPass',['errorMessage' => $error]);
+            }
+
+        // return view('agentResetPass',['errorMessage' => $error]);
+        // return redirect('/agentResetPass')->with('resetError',$error);
+
     }
 
 
     public function viewAgents()
     {
-        // $userdetail = Userdetail::where('role','Agent')->get();
         $userdetail = Userdetail::all();
         return ['status' => true ,'lists' => $userdetail];
-        // return view('/agentpanel',['lists' => $userdetail]);
     }
 
     public function loadChat($id)
@@ -89,7 +94,6 @@ class agentPanelController extends Controller
 
                 $time = $message['created_at'];
                 $chattime = date("h:i:A",strtotime($time));
-                // $chattime = Carbon::now->addMinutes('330')->timestamp;
                 $message['time'] = $chattime;                
             }
             else{
@@ -102,7 +106,6 @@ class agentPanelController extends Controller
 
                     $time = $message['created_at'];
                     $chattime = date("h:i:A",strtotime($time));
-                    // $chattime = Carbon::now->addMinutes('330')->timestamp;
                     $message['time'] = $chattime;
                     
                 }else{
@@ -136,7 +139,6 @@ class agentPanelController extends Controller
         $chatdetail->receiverId = $req->receiver;
         $chatdetail->message = $req->message;
         
-        // date("h:i:A",strtotime($time));
         $chatdetail->created_at = Carbon::now()->addminutes('330');
 
         $chatdetail->save();
@@ -148,11 +150,6 @@ class agentPanelController extends Controller
             'message'=>'Message sent successfully'
 
         ]);
-        // return ['response' => 'Message Sent'];
-
-        // return redirect('/showchat');
-        // return view('agentpanel');
-        // return redirect('/loadchat');
 
     }
     public function createfile(Request $req)
@@ -169,14 +166,8 @@ class agentPanelController extends Controller
             {
                 $message['type']='outgoing';
                 $message['message'] = Crypt::encryptString($message['message']);
-
                 
-
-
-                // Storage::append("$loggedInUser$receiverUser.csv", $message['senderId']);
-                // Storage::append("$loggedInUser$receiverUser.csv", $message['receiverId']);
                 Storage::append("$loggedInUser-$receiverUser.csv",$message);
-                // Storage::append("$loggedInUser$receiverUser.csv", $message['senderId'],$message['receiverId'],$message['message']);
 
             }
             else if( ($message['senderId'] == $receiverUser) && ($message['receiverId'] == $loggedInUser) )
@@ -184,25 +175,13 @@ class agentPanelController extends Controller
                 $message['type']='incoming';
                 $message['message'] = Crypt::encryptString($message['message']);
 
-               
-
-                // Storage::append("$loggedInUser$receiverUser.csv", $message['senderId'],$message['receiverId'],$message['message']);
-                // Storage::append("$loggedInUser$receiverUser.csv", $message['senderId']);
-
-                // Storage::append("$loggedInUser$receiverUser.csv", $message['receiverId']);
                 Storage::append("$loggedInUser-$receiverUser.csv", $message);
             }
         }
         
-        // return $senderData;
-        // Storage::put('back.txt','lakshya');
-
         return redirect('agentpanel');
     }
-    // public function appendToFile()
-    // {
-    //     Storage::put('back.txt','lakshya');
-    // }
+   
     public function DeleteChat(Request $req)
     {
         $senderData = Chatdetail::where('senderId',session('id'))->Where('receiverId',$req->idd);
@@ -216,13 +195,7 @@ class agentPanelController extends Controller
         $loggedInUser = session('id');
         $receiverUser = $req->restoreid;
         $contents = Storage::get("$loggedInUser-$receiverUser.csv");
-        // $con = JSON.parse($contents);
-        // $con = $contents->toJson();
-        // $contentss = file("$loggedInUser$receiverUser.txt");
-        // $contents = json_encode($contents);
-        // $contents->get(message);
-        // foreach($contents as $content)g
-        // {
+        
             $location = "app";
             $filename = "$loggedInUser-$receiverUser.csv";
             $filepath = storage_path($location."/".$filename);
@@ -241,77 +214,38 @@ class agentPanelController extends Controller
                    $importData_arr[$i][] = $filedata [$c];
                 }
                 $i++;
-             }
-             fclose($file);
-             foreach($importData_arr as $importData){
-            //    explode(',', $importData);
-            // dd( array_values($importData) );
-            // array_values($importData);
+            }
+            fclose($file);
+            foreach($importData_arr as $importData){
+            
                 $chatdetail = new Chatdetail();
-                // dd(explode(":",$importData[3]));
-                // return array_values(explode(',',$importData[1]));
-                // $chatdetail->senderId = array_values(explode(',',$importData[1]));
+                
                 $import = explode(":",$importData[1]);
-                // trim($import[1],'""');
-                // dd($import[1]);
                 $chatdetail->senderId = $import[1];
                 
                 $import = explode(":",$importData[2]);
-
                 $chatdetail->receiverId = $import[1];
+
                 $import = explode(":",$importData[3]);
-                // dd(substr($import[1], 1, -1));
-                // dd($import[1]);
-                $r = substr($import[1], 1, -1);
-                // dd($r);
-                $chatdetail->message = Crypt::decryptString($r);
+                $msg = substr($import[1], 1, -1);
+                $chatdetail->message = Crypt::decryptString($msg);
 
-                // $import = explode(":",$importData[4]);
-                // $c = substr($importData[4], 1, -1);
-                $c = substr($importData[4], 11, -1);
-
-                // echo $c;
-                // echo "-------------";
-                $e = str_replace("T", " ", $c);
-                // echo $e;
-                // echo "-------------";
-                $e = substr($e, 0, strpos($e, "."));
-                // echo $e;
-                // echo "-------------";
-                $e = substr($e,1,-1);
-                // echo $e;
-
-
-                // dd('test');
-                $chatdetail->created_at = $e;
+                $created = substr($importData[4], 11, -1);
+                $time = str_replace("T", " ", $created);
+                $time = substr($time, 0, strpos($time, "."));
+                $time = substr($time,1,-1);
+                $chatdetail->created_at = $time;
                 
-                $d = substr($importData[5], 11, -1);
-                // echo $d;
-                // echo "-------------";
-                $f = str_replace("T", " ", $d);
-                // echo $f;
-                // echo "-------------";
-                $f = substr($f, 0, strpos($f, "."));
-                // echo $f;
-                // echo "-------------";
-                $f = substr($f,1,);
-                // echo $f;
+                $updated = substr($importData[5], 11, -1);
+                $timing = str_replace("T", " ", $updated);
+                $timing = substr($timing, 0, strpos($timing, "."));
+                $timing = substr($timing,1,);
+                $chatdetail->updated_at = $timing;
 
-                $chatdetail->updated_at = $f;
-
-                // dd('test');
-
-
-                // $chatdetail->updated_at = $import[1];
-
-                // $chatdetail->created_at =$importData[4];
-                // $chatdetail->updated_at =$importData[5];
                 $chatdetail->save();
 
-    
-              }
-            // echo $contents;
-        // }
+            }
+            
         return redirect('agentpanel');
     }
 }

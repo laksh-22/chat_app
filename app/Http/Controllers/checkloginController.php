@@ -145,5 +145,13 @@ class checkloginController extends Controller
 
     }
 
+    public function setLanguage(Request $req)
+    {
+        // dd('hi');
+        $lang = $req->language;
+        session(['lang'=>$lang]);
+        return redirect('/login');
+    }
+
 
 }

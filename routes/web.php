@@ -64,14 +64,18 @@ Route::middleware('adminPages')->group(function(){
     Route::get('changepassword/{id}/{otp}',[checkloginController::class,'checkOtp']);
     Route::view('changepass','changePass');Route::post('setpass',[checkloginController::class,'setNewPassword']);
     Route::post('changepass',[checkloginController::class,'changepass']);
-    Route::view('/login','login');
+    // Route::view('/login','login');
 
-    // Route::get('/login', function(){
-    //     return view('login');
-    // });
+    Route::get('/login', function(){
+        App::setlocale(session('lang'));
+        return view('login');
+    });
     Route::post('checkuser',[checkloginController::class,'checkUser']);
 
  });
+
+ Route::post('language',[checkloginController::class,'setLanguage']);
+
 
 
  Route::middleware('agentPages')->group(function(){

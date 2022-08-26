@@ -29,7 +29,7 @@ class resetmail extends Mailable
      */
     public function build()
     {
-        return $this->from('laksh.anand2299@gmail.com','Lakshya')
+        return $this->from('laksh.anand2299@gmail.com','Laksh')
                     ->subject('Reset Password')
                     ->view('emails.resetemail');
     }

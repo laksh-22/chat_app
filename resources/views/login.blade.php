@@ -58,16 +58,28 @@
 
    <div class="row">
       <div class="contaier col-lg-12" style = "height:128px;">
+         <form method="POST" action="/language" style="padding-left: 1595px;margin-top: 6px;">
+            
+            @csrf
+            <select name="language" id="lang" style="height: 31px;border: 2px solid green;">
+            <option value="">{{__('loginPage.Select_Language')}}</option>
+            <option value="en">{{__('loginPage.English')}}</option>
+            <option value="hi">{{__('loginPage.Hindi')}}</option>
+            <option value="ja">{{__('loginPage.Japanese')}}</option>
+            </select>
 
+            <button type="submit" class="btn btn-success" style="height: 36px;">{{__('loginPage.Submit')}}</button>
+
+         </form>
       </div>
    </div>
 
    <div class="row">
       <div class="container col-lg-12">
-         <h3 class="text-center mt-4"style="color:skyblue;">FAVEO CHAT</h3>
+         <h3 class="text-center mt-4"style="color:skyblue;">{{__('loginPage.FAVEO_CHAT')}}</h3>
       </div>
       <div class="container col-lg-12">
-         <h3 class="text-center mt-3">Great to see you</h3>
+         <h3 class="text-center mt-3">{{__('loginPage.Great_to_see_you')}}</h3>
       </div>
       <div class="contaier col-lg-12" style = "height:551px;">
          <div class="container col-lg-4 bg-light" style="margin-top:36px; height:435px;width:594px;">
@@ -78,14 +90,14 @@
                   @csrf
                   <div class="form-floating">
                      <input type="email" class="form-control" id="floatingInput" name="email" placeholder="name@example.com" >
-                     <label for="floatingInput">Email address</label>
+                     <label for="floatingInput">{{__('loginPage.Email')}}</label>
                   </div>
                   <div class="form-floating mt-3">
                      <input type="password" class="form-control" id="floatingPassword" name="password" placeholder="Password" >
-                     <label for="floatingPassword">Password</label>
+                     <label for="floatingPassword">{{__('loginPage.Password')}}</label>
                   </div>
-                  <button class="w-100 btn btn-lg btn-primary mt-3 mb-3" type="submit">Login</button>
-                  <a class="btn btn-primary w-100 mb-3 btn-lg" href="forgotpass" role="button">Forgot Password</a>
+                  <button class="w-100 btn btn-lg btn-primary mt-3 mb-3" type="submit">{{__('loginPage.Login')}}</button>
+                  <a class="btn btn-primary w-100 mb-3 btn-lg" href="forgotpass" role="button">{{__('loginPage.Forgot_Password')}}</a>
                </form>
             </main>
          </div>
