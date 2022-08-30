@@ -23,7 +23,8 @@ class checkloginController extends Controller
 
         if(!$userDetail)
         {
-            return view('login',['errorMessage' => 'Email does not exist']);
+            // return view('login',['errorMessage' => 'Email does not exist']);
+            return redirect('/login')->with('errorMessage','Email does not exist');
         }
         else
         {
@@ -31,34 +32,30 @@ class checkloginController extends Controller
 
             if(!$passwordHashStatus)
             {
-                return view('login',['errorMessage' => 'Incorrect Password']);
+                // return view('login',['errorMessage' => 'Incorrect Password']);
+                return redirect('/login')->with('errorMessage','Incorrect Password');
+
             }
             else
             {
-                // $data = $req->input();
                 if($userDetail->role == 'Admin')
                 {
-                    // $data = $userDetail->name;
-                    // $req->session()->put('username',$data);
                     $req->session()->put('role','Admin');
                     session(['username' => 'Lakshya']);
                     session(['id'=>$userDetail->id]);
                     
-                    // session(['role'=>'Admin']);
                     return redirect('adminpanel');
                 }
                 else if($userDetail->role == 'Agent')
                 {
-                    // $data = $userDetail->name;
-                    // $req->session()->put('username',$data);
-                    // $req->session()->put('role','Agent');
                     session(['id'=>$userDetail->id]);
 
                     session(['username' => $userDetail->name]);
                     if($userDetail->firstTimeLogin == 0)
                     {
-                        // session(['logincount'=> '1']);
-                        return view('agentResetPass');
+                        session(['idd'=>$userDetail->id]);
+                        return redirect('agentResetPass');
+                        // return view('agentResetPass');
                     }
                     else
                     {

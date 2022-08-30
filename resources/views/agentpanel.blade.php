@@ -103,169 +103,158 @@
     </div>
             
     <script>
-                function hello()
-                {
-                    // alert('hi');
-                    // // document.getElementById("display").style.visibility = "visible";
-                    var x = document.getElementById("display");
-                    if(x.style.visibility == "hidden")
-                    {
-                        x.style.visibility = "visible";
-                    }
-                    else
-                    {
-                        x.style.visibility = "visible";
-                    }
-
-                    
-                }
+        function hello()
+        {
+            var x = document.getElementById("display");
+            if(x.style.visibility == "hidden")
+            {
+                x.style.visibility = "visible";
+            }
+            else
+            {
+                x.style.visibility = "visible";
+            }               
+        }
     </script>
                    
 
-            <script>
-                function disableButton()
-                {
-                    if(document.getElementById('message').value != "")
-                    {
-                        document.getElementById('sendMsg').classList.remove("disabled");
-                    }
-                    else if(document.getElementById('message').value == "")
-                    {
-                        document.getElementById('sendMsg').classList.add("disabled");
-                    }
-                }
-            </script>
+    <script>
+        function disableButton()
+        {
+            if(document.getElementById('message').value != "")
+            {
+                document.getElementById('sendMsg').classList.remove("disabled");
+            }
+            else if(document.getElementById('message').value == "")
+            {
+                document.getElementById('sendMsg').classList.add("disabled");
+            }
+        }
+    </script>     
 
-            <script>
-                 $("#message").keypress(function(event) {
+    <script>
+        $("#message").keypress(function(event) {
             if (event.keyCode === 13) {
                 $("#sendMsg").click();
             }
         });
-            </script>
+    </script>
            
-            <script> 
+    <script> 
 
-                $(document).ready(function (){
+        $(document).ready(function (){
 
-                    
+            $(document).on('click','.loader',function(){
+                let id = this.id;
+                $("#rec").val(id);
+                $('#delete').val(id);
+                $('#backup').val(id);
+                $('#restore').val(id);
+
+                fetchChat(id);
+
+                const refreshchat = setInterval(function(){
+
+                    // $(document).on('click','.loader',function(){
+                    //     let iid = this.id;
+                    //     $("#rec").val(iid);
+                        
+                    //     stopLoading();
+                    //     fetchChat(iid);
+                    // });
 
                     $(document).on('click','.loader',function(){
-                        let id = this.id;
-                        $("#rec").val(id);
-                        $('#delete').val(id);
-                        $('#backup').val(id);
-                        $('#restore').val(id);
+                        
+                        stopLoading();
+                        // fetchChat(iid);
+                    });
+                
+                    fetchChat(id);
 
+                }, 7000);
 
+                function stopLoading(){
+                    clearInterval(refreshchat);
+                }
 
-                        fetchChat(id);
+            });   
 
-                        const refreshchat = setInterval(function(){
+            $(document).on('click','#sendMsg',function(){
+            var id = $("#rec").val();
+            let data = {
+                'sender': $("#sender").val(),
+                'receiver': $("#rec").val(),
+                'message': $("#message").val()
+            }
+            saveChat(data);
+            fetchChat(id);
+            });   
 
-                            // $(document).on('click','.loader',function(){
-                            //     let iid = this.id;
-                            //     $("#rec").val(iid);
-                                
-                            //     stopLoading();
-                            //     fetchChat(iid);
-                            // });
-
-                            $(document).on('click','.loader',function(){
-                                
-                                stopLoading();
-                                // fetchChat(iid);
-                            });
-                           
-                            fetchChat(id);
-
-                        }, 7000);
-
-                        function stopLoading(){
-                            clearInterval(refreshchat);
-                          
-                        }
-
-                    });   
-
-                    $(document).on('click','#sendMsg',function(){
-                        var id = $("#rec").val();
-                        let data = {
-                            'sender': $("#sender").val(),
-                            'receiver': $("#rec").val(),
-                            'message': $("#message").val()
-                        }
-                        saveChat(data);
-                        fetchChat(id);
-                    });   
-
-                    function saveChat(data){
-                        $.ajaxSetup({
-                            headers: {
-                                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                            }
-                        });
-                        $.ajax({
-                            url: "/savechat",
-                            method:'POST',
-                            data: data,
-                            dataType: 'JSON',
-                            success: function(response){
-                                console.log(response.message);
-                            },
-                        });
-
-                        $("#message").val('');
-                    }
-
-
-                    function fetchChat(id){
-                        // var id = $("#rec").val();
-                        $('#chatbox').html('');
-                        $.ajax({
-
-                            url: "/loadchat/"+id,
-                            method:'get',
-                            dataType: 'JSON',
-                            success: function(response) {
-                                $('.name').empty();
-                                $('.name').append(response.name);
-
-                                $.each(response.messages, function(key,chat){
-                                
-                                    if(chat.type == 'incoming')
-                                    {
-                                        $('#chatbox').append(
-                                            "<div class='time-receive'>"+
-                                               chat.time+
-                                            "</div>"+
-                                            "<div class='message receive'>"
-                                                +chat.message +
-                                            "</div>"
-
-                                        );
-                                    }
-
-                                    else if(chat.type == 'outgoing')
-                                    {
-                                        $('#chatbox').append(
-                                            "<div class='time-send'>"+
-                                                chat.time+
-                                            "</div>"+
-                                            "<div class='message send'>"+
-                                                chat.message +
-                                            "</div>"
-                                        );
-                                    } 
-                                });
-                                var messageBody = document.querySelector('#chatbox');
-                                messageBody.scrollTop = messageBody.scrollHeight - messageBody.clientHeight;
-                            }
-                        });
+            function saveChat(data){
+                $.ajaxSetup({
+                    headers: {
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                     }
                 });
-            </script> 
+                $.ajax({
+                    url: "/savechat",
+                    method:'POST',
+                    data: data,
+                    dataType: 'JSON',
+                    success: function(response){
+                        console.log(response.message);
+                    },
+                });
 
+                $("#message").val('');
+            }
+
+
+            function fetchChat(id){
+                $('#chatbox').html('');
+                $.ajax({
+
+                    url: "/loadchat/"+id,
+                    method:'get',
+                    dataType: 'JSON',
+                    success: function(response) {
+                        $('.name').empty();
+                        $('.name').append(response.name);
+
+                        $.each(response.messages, function(key,chat){
+                        
+                            if(chat.type == 'incoming')
+                            {
+                                $('#chatbox').append(
+                                    "<div class='time-receive'>"+
+                                    chat.time+
+                                    "</div>"+
+                                    "<div class='message receive'>"
+                                        +chat.message +
+                                    "</div>"
+
+                                );
+                            }
+
+                            else if(chat.type == 'outgoing')
+                            {
+                                $('#chatbox').append(
+                                    "<div class='time-send'>"+
+                                        chat.time+
+                                    "</div>"+
+                                    "<div class='message send'>"+
+                                        chat.message +
+                                    "</div>"
+                                );
+                            } 
+                        });
+                        var messageBody = document.querySelector('#chatbox');
+                        messageBody.scrollTop = messageBody.scrollHeight - messageBody.clientHeight;
+                    }
+                });
+            }
+        });
+    </script> 
 
 </div> 
 @endsection

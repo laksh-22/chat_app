@@ -36,11 +36,10 @@ class adminPanelController extends Controller
         ];
     
         Mail::to($req->email)->send(new agentRegistration($maildata));
-        // session(['logincount'=>'0']);
 
-        return view('addagent',['successMessage'=> 'Agent added successfully']);
+        // return view('addagent',['successMessage'=> 'Agent added successfully']);
+        return redirect('/addagent')->with('successMessage','Agent added successfully');
     
-        // dd("Mail sent successfully");Route::get('agentlist',[adminPanelController::class,'agentlist']);
 
     }
 

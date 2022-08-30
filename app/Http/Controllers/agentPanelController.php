@@ -17,13 +17,16 @@ class agentPanelController extends Controller
 {
     public function reset(Request $req)
     {
+
+        // dd('hi');
         $validatedData = $req->validate([
             'oldpassword' => 'required',
             'newpassword' => 'required',
-            'confirmpassword' => 'required|same:newpassword',
+            'confirmpassword' => 'required',
         ]);
 
-        $userdetail = Userdetail::where('email',$req->email)->get()->first();
+        // $userdetail = Userdetail::where('email',$req->email)->get()->first();
+        $userdetail = Userdetail::find($req->id);
         
             $passwordHashStatus = Hash::check($req->oldpassword,$userdetail->password);
             if($passwordHashStatus)
@@ -40,12 +43,13 @@ class agentPanelController extends Controller
                     session()->pull('role',null);
 
                     // return view('agentResetPass',['successMessage' => 'Password changed successfully']);
-                    
-                    return redirect('login')->with('password','Password changed successfully');
+                          
+                    return redirect('/login')->with('password','Password changed successfully');
                 }
                 else
                 {
                     // $error = "Password and confirm password are not same";
+                    // dd('hi');
                     return redirect('/agentResetPass')->with('resetError','Password and confirm password are not same');
 
                 }

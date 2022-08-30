@@ -54,31 +54,31 @@ Route::middleware('adminPages')->group(function(){
     Route::post('addagent',[adminPanelController::class,'addagent']);
     Route::get('deleteagent/{id}',[adminPanelController::class,'deleteAgent']);
 
- });
+});
 
- Route::get('/adminpanel/{search}',[adminPanelController::class,'agentlist']);
+Route::get('/adminpanel/{search}',[adminPanelController::class,'agentlist']);
 
- Route::middleware('unauthorized')->group(function(){
+Route::middleware('unauthorized')->group(function(){
 
     Route::view('forgotpass','forgotpass');
     Route::get('changepassword/{id}/{otp}',[checkloginController::class,'checkOtp']);
-    Route::view('changepass','changePass');Route::post('setpass',[checkloginController::class,'setNewPassword']);
+    Route::view('changepass','changePass');
+    Route::post('setpass',[checkloginController::class,'setNewPassword']);
     Route::post('changepass',[checkloginController::class,'changepass']);
-    // Route::view('/login','login');
 
     Route::get('/login', function(){
         App::setlocale(session('lang'));
         return view('login');
     });
+
     Route::post('checkuser',[checkloginController::class,'checkUser']);
+});
 
- });
+Route::post('language',[checkloginController::class,'setLanguage']);
+Route::post('resetpassword',[agentPanelController::class,'reset']);
+Route::view('/agentResetPass','agentResetPass');
 
- Route::post('language',[checkloginController::class,'setLanguage']);
-
-
-
- Route::middleware('agentPages')->group(function(){
+Route::middleware('agentPages')->group(function(){
 
     Route::get('/loadchat/{id}',[agentPanelController::class,'loadChat']);   // API
     Route::post('/savechat',[agentPanelController::class,'saveChat']);    // send button
@@ -86,21 +86,15 @@ Route::middleware('adminPages')->group(function(){
         return view('agentpanel');           
     });
     Route::get('agentpanel-list',[agentPanelController::class,'viewAgents']);
-    // Route::get('/agentlist',[adminPanelController::class,'agentlist']);
-    // Route::get('/agentlist/{search}',[adminPanelController::class,'agentlist']);
+ 
     Route::view('/agentpanel','agentpanel');
-    Route::post('resetpassword',[agentPanelController::class,'reset']);
-    // Route::view('agentResetPass','agentResetPass');
-    // Route::post('resetpassword',[agentPanelController::class,'reset']);
     Route::post('create',[agentPanelController::class,'createfile']);
     Route::post('deletechat',[agentPanelController::class,'DeleteChat']);
     Route::post('restorechat',[agentPanelController::class,'RestoreChat']);
-
-
 });
 
 Route::post('toAgentPanel',[adminPanelController::class,'toAgentPanel']);
-Route::view('/agentResetPass','agentResetPass');
+
 
 
 
